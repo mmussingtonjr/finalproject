@@ -1,0 +1,345 @@
+/*Are you a core or casual gamer?
+by Marlon Mussington*/
+
+//Globals
+background(49, 33, 222);
+var questionNumber = 0;
+var currentScene = 0;
+
+
+//Bitmoji
+var drawHead=function(bitmojiX, bitmojiY, bitmojiHeight){
+    fill(0, 0, 0);//hair fill
+    ellipse(bitmojiX-(bitmojiHeight/100*100), bitmojiY+(bitmojiHeight/100*74), (bitmojiHeight/100*108), (bitmojiHeight/100*100)); //hair
+    
+    fill(135, 103, 90);//neck fill
+    rect(bitmojiX-(bitmojiHeight/100*115), bitmojiY+(bitmojiHeight/100*103), (bitmojiHeight/100*31), (bitmojiHeight/100*68));//neck
+    
+    fill(135, 103, 90);//head fill
+    ellipse(bitmojiX-(bitmojiHeight/100*100), bitmojiY+(bitmojiHeight/100*100), (bitmojiHeight/100*83), (bitmojiHeight/100*100));//head
+    
+    stroke(0, 0, 0);//glasses left fill
+    ellipse(bitmojiX-(bitmojiHeight/100*81), bitmojiY+(bitmojiHeight/100*88), (bitmojiHeight/100*35), (bitmojiHeight/100*22));//glasses left
+    
+    stroke(0, 0, 0);//line fill
+    ellipse(bitmojiX-(bitmojiHeight/100*120), bitmojiY+(bitmojiHeight/100*88), (bitmojiHeight/100*35), (bitmojiHeight/100*22));//glasses right
+    line(bitmojiX-(bitmojiHeight/100*98), bitmojiY+(bitmojiHeight/100*88), bitmojiX-(bitmojiHeight/100*102), bitmojiY+(bitmojiHeight/100*88));//glasses bridge
+    
+    fill(60, 46, 40);//right eye fill
+    ellipse(bitmojiX-(bitmojiHeight/100*80), bitmojiY+(bitmojiHeight/100*88), (bitmojiHeight/100*11), (bitmojiHeight/100*12));//right eye
+    
+    fill(60, 46, 40);//left eye fill
+    ellipse(bitmojiX-(bitmojiHeight/100*121), bitmojiY+(bitmojiHeight/100*88), (bitmojiHeight/100*11), (bitmojiHeight/100*12));//left eye
+    
+    fill(0, 0, 0);//mouth fill
+    arc(bitmojiX-(bitmojiHeight/100*100), bitmojiY+(bitmojiHeight/100*116), bitmojiHeight/100*50, bitmojiHeight/100*50, 0, 180);//mouth
+    
+    fill(255, 255, 255);//teeth fill
+    arc(bitmojiX-(bitmojiHeight/100*100), bitmojiY+(bitmojiHeight/100*121), (bitmojiHeight/100*36), (bitmojiHeight/100*30), 0, 180);//teeth
+};
+
+var drawHat=function(bitmojiX, bitmojiY, bitmojiHeight){
+    fill(77, 51, 25);//hat fill
+    arc(bitmojiX-(bitmojiHeight/100*102), bitmojiY+(bitmojiHeight/100*59), (bitmojiHeight/100*118), (bitmojiHeight/100*-86), 0, 180);//top of hat
+    rect(bitmojiX-(bitmojiHeight/100*164), bitmojiY+(bitmojiHeight/100*52), (bitmojiHeight/100*123), (bitmojiHeight/100*23));//base of hat
+};
+
+var drawShirt=function(bitmojiX, bitmojiY, bitmojiHeight){
+    fill(0, 0, 0);//shirt color
+    rect(bitmojiX-(bitmojiHeight/100*142), bitmojiY+(bitmojiHeight/100*171), (bitmojiHeight/100*83), (bitmojiHeight/100*86));//shirt
+    
+    fill(255, 255, 255);//text fill
+    textSize(bitmojiHeight/100*44);
+    text("MM", bitmojiX-(bitmojiHeight/100*137), bitmojiY+(bitmojiHeight/100*200));//initials
+};
+
+var drawBitmoji = function(bitmojiX, bitmojiY, bitmojiHeight){
+drawHead(bitmojiX, bitmojiY, bitmojiHeight);
+drawHat(bitmojiX, bitmojiY, bitmojiHeight);
+drawShirt(bitmojiX, bitmojiY, bitmojiHeight);
+};
+
+/* Copy in the Khan Button class */
+var Button = function(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.width = config.width || 150;
+    this.height = config.height || 50;
+    this.label = config.label || "Click";
+    this.onClick = config.onClick || function() {};
+};
+
+Button.prototype.draw = function() {
+    fill(247, 218, 0);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x + 10, this.y + this.height/4);
+};
+
+Button.prototype.isMouseInside = function() {
+    return mouseX > this.x &&
+           mouseX < (this.x + this.width) &&
+           mouseY > this.y &&
+           mouseY < (this.y + this.height);
+};
+
+Button.prototype.handleMouseClick = function() {
+    if (this.isMouseInside()) {
+        this.onClick();
+    }
+};
+
+//Start Button
+var start = new Button({
+    x: 122,
+    y: 334,
+    label: "        Start",
+    onClick: function() {
+        currentScene = 1;
+    }
+});
+
+//Question Array
+
+var questions = [{
+    text: "Do you prefer single-player games \nover multiplayer games?", // 0
+    resultCore: 0,
+    resultCasual: 1
+    },{
+    text: "Are you interested in \nvirtual reality (VR) gaming?", // 1
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Do you enjoy playing strategy games?", // 2
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Are you a fan of open-world games?", // 3
+    resultCore: 0,
+    resultCasual: 1
+    },{
+     text: "Do you play games on mobile devices?", // 4
+    resultCore: 0,
+    resultCasual: 1
+    },{
+    text: "Are you drawn to games with a \nstrong narrative/storyline?", // 5
+    resultCore: 1,
+    resultCasual: 1
+    },{
+    text: "Do you participate in \ncompetitive gaming or esports?", // 6
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Are you interested in games with a \nstrong emphasis on exploration?", // 7
+    resultCore: 0,
+    resultCasual: 1
+    },{
+    text: "Do you like games with \nrealistic graphics and physics?", // 8
+    resultCore: 1,
+    resultCasual: 1
+    },{
+    text: "Are you a fan of \npuzzle-solving games?", // 9
+    resultCore: 0,
+    resultCasual: 1
+    },{
+    text: "Do you enjoy playing retro \nor classic games?", // 10
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Are you inclined towards \nrole-playing games (RPGs)?", // 11
+    resultCore: 1,
+    resultCasual: 1
+    },{
+    text: "Do you prefer games with a \nfast-paced gameplay style?", // 12
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Are you into simulation games, \nlike farming or city-building?", // 13
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Do you follow gaming news \nand trends regularly?", // 14
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Are you a collector of gaming \nmemorabilia or merchandise?", // 15
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Do you enjoy playing games \nthat involve teamwork \nand collaboration?", // 16
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Are you interested in games with \nprocedural generation or \nrandomly generated content?", // 17
+    resultCore: 1,
+    resultCasual: 0
+    },{
+    text: "Do you prefer games with a \nrealistic art style over a \nmore stylized/cartoonish look?", // 18
+    resultCore: 1,
+    resultCasual: 1
+    },{
+    text: "Are you a completionist who likes \nto achieve 100% in games?", // 19
+    resultCore: 1,
+    resultCasual: 0
+    }
+];
+
+
+
+//Randomized Questions
+var randQuestions = [];
+
+//Loop to Select Questions
+while (randQuestions.length < 5) {
+    var quesIndex = round(random(0, 19.4));
+        var inArray = false;
+    for (var j = 0; j < randQuestions.length; j++){
+        if (quesIndex === randQuestions[j]){
+            inArray = true;
+        }
+    }
+    if(inArray === false){
+        randQuestions.push(quesIndex);
+    }
+}
+
+//Core or Casual?
+var score = {
+    core: 0,
+    casual: 0
+};
+
+
+//Yes and No Buttons
+var yes = new Button({
+    x: 40,
+    y: 274,
+    label: "Yes",
+    onClick: function() {
+        var currentQuestion = questions[randQuestions[questionNumber]];
+        score.core += currentQuestion.resultCore;
+        score.casual += currentQuestion.resultCasual;
+        questionNumber++;
+
+        // Check if all questions are answered
+        if (questionNumber >= 5) {
+            currentScene = 2; // Switch to result screen
+            questionNumber = 0; // Reset questionNumber for potential re-runs
+        }
+    }
+});
+
+var no = new Button({
+    x: 215,
+    y: 274,
+    label: "No",
+    onClick: function() {
+        var currentQuestion = questions[randQuestions[questionNumber]];
+        score.core -= currentQuestion.resultCore;
+        score.casual -= currentQuestion.resultCasual;
+        questionNumber++;
+
+        // Check if all questions are answered
+        if (questionNumber >= 5) {
+            currentScene = 2; // Switch to result screen
+            questionNumber = 0; // Reset questionNumber for potential re-runs
+        }
+    }
+});
+
+
+
+//Title Screen
+var titleScreen = function(){
+    background(156, 6, 6);
+    start.draw();
+    drawBitmoji(283, 107, 85);
+    fill(255, 255, 255);
+    text(" Are you a core \nor casual gamer?", 67, 14);
+};
+
+
+//Game Screen
+var gameScreen = function(){
+    background(6, 84, 156);
+    yes.draw();
+    no.draw();
+    fill(255, 255, 255);
+    text (questions[randQuestions[questionNumber]].text, 50, 50);
+    };
+
+//Results Screen
+var drawResultScreen = function() {
+    background(13, 163, 222);
+
+    var result = "You're both!";
+    if (score.core > score.casual) {
+        result = "You're a Hardcore Gamer!";
+    } else if (score.core < score.casual) {
+        result = "You're a Casual Gamer!";
+    }
+
+    fill(0, 0, 0);
+    textSize(33);
+    textAlign(CENTER, CENTER);
+    text(result, width/2, height/2);
+};
+
+//Button Properties
+yes.draw = function() {
+    fill(34, 255, 0);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x + 10, this.y + this.height / 4);
+};
+
+no.draw = function() {
+    fill(156, 6, 6);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x + 10, this.y + this.height / 4);
+};
+
+start.draw = function() {
+    fill(247, 218, 0);
+    rect(this.x, this.y, this.width, this.height, 5);
+    fill(0, 0, 0);
+    textSize(19);
+    textAlign(LEFT, TOP);
+    text(this.label, this.x + 10, this.y + this.height / 4);
+};
+
+
+var mouseClicked = function(){
+    if (currentScene === 0){
+    start.handleMouseClick();
+    } else if (currentScene === 1){
+    yes.handleMouseClick();
+    no.handleMouseClick();
+    
+    }
+};
+
+var draw = function() {
+    if (currentScene === 0){
+    titleScreen();
+    } else if (currentScene === 1){
+    gameScreen();
+
+    }
+    // Check if all questions are answered
+    if (questionNumber >= 5) {
+        currentScene = 2; // Switch to result screen
+        questionNumber = 0; // Reset questionNumber for potential re-runs
+
+    }
+    else if (currentScene === 2) {
+    drawResultScreen();
+    }
+};
